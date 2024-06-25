@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Input Example</title>
+<style>
+    .container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    #output {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <label for="userInput">Enter something:</label>
+    <input type="text" id="userInput" />
+    <button onclick="displayInput()">Submit</button>
+    <div id="output"></div>
+</div>
+
+<script>
+// Function to parse query parameters from URL
+function getQueryVariable(variable) {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+        var pair = vars[i].split("=");
+        if (pair[0] === variable) {
+            return decodeURIComponent(pair[1].replace(/\+/g, " "));
+        }
+    }
+    return null;
+}
+
+// Function to display input and update URL
+function displayInput() {
+    var userInput = document.getElementById('userInput').value;
+    var outputDiv = document.getElementById('output');
+    outputDiv.innerHTML = '<p>You entered: ' + userInput + '</p>';
+    
+    // Update URL with the userInput as a query parameter
+    var url = new URL(window.location.href);
+    url.searchParams.set('input', userInput);
+    history.pushState({}, '', url);
+}
+
+// Function to set a cookie
+function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+// Function to get a cookie
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+// Set a default cookie if it doesn't exist
+function setDefaultCookie() {
+    var cookieName = "Cookie";
+    var cookieValue = "Real_cookie-6bd6cfb85c4e";
+    var cookieDays = 7; // Cookie expires in 7 days
+    if (!getCookie(cookieName)) {
+        setCookie(cookieName, cookieValue, cookieDays);
+    }
+}
+
+// Check if there's an 'input' query parameter in the URL on page load
+document.addEventListener('DOMContentLoaded', function() {
+    setDefaultCookie(); // Set default cookie
+    var userInput = getQueryVariable('input');
+    if (userInput !== null) {
+        var outputDiv = document.getElementById('output');
+        outputDiv.innerHTML = '<p>You entered: ' + userInput + '</p>';
+        document.getElementById('userInput').value = userInput; // Set input field value
+    }
+});
+</script>
+
+</body>
+</html>
